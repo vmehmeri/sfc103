@@ -286,6 +286,7 @@ def create_sf(sfname):
     local_sf_topo[sfname] = flask.request.get_json()['service-function'][0]
     data_plane_locator_list = local_sf_topo[sfname]['sf-data-plane-locator']
 
+    logger.info("SF name: %s | Data Plane Locator List: %s",local_sf_topo[sfname],data_plane_locator_list)
     for data_plane_locator in data_plane_locator_list:
         if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
             sf_port = data_plane_locator['port']
@@ -493,7 +494,7 @@ def main():
     agent_port = 5000
     odl_auto_sff = False
     ovs_local_sff_cp_ip = '0.0.0.0'
-    debug_level = False
+    debug_level = True
 
     #: setup parser -----------------------------------------------------------
     parser = argparse.ArgumentParser(description='SFC Agent',
@@ -597,10 +598,12 @@ def main():
 
     #: execute actions --------------------------------------------------------
     try:
-        if debug_level:
-            logging.basicConfig(level=logging.DEBUG)
-        else:
-            logging.basicConfig(level=logging.INFO)
+        #if debug_level:
+        #    logging.basicConfig(level=logging.DEBUG)
+        #else:
+        #    logging.basicConfig(level=logging.INFO)
+
+        logging.basicConfig(level=logging.DEBUG)
 
         logger.info("\n\n====== STARTING SFC AGENT ======")
         logger.info("\n\nSFC Agent will listen to Opendaylight REST Messages and take any\n"

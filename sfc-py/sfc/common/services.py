@@ -120,6 +120,22 @@ class BasicService(object):
         """
         return self.service_name
 
+    def _pretty_print_decoded(self):
+        """
+        Prints out pretty string of decoded packet components
+        """
+        logger.info('VxLAN VNI: %s', self.server_vxlan_values.vni)
+        logger.info('SRC MAC: %s:%s:%s:%s:%s:%s', '{:x}'.format(int(self.server_eth_values.smac0)), '{:x}'.format(int(self.server_eth_values.smac1)),
+                    '{:x}'.format(int(self.server_eth_values.smac2)), '{:x}'.format(int(self.server_eth_values.smac3)), '{:x}'.format(int(self.server_eth_values.smac4)),
+                    '{:x}'.format(int(self.server_eth_values.smac5)))
+        logger.info('DST MAC: %s:%s:%s:%s:%s:%s', '{:x}'.format(int(self.server_eth_values.dmac0)), '{:x}'.format(int(self.server_eth_values.dmac1)),
+                    '{:x}'.format(int(self.server_eth_values.dmac2)), '{:x}'.format(int(self.server_eth_values.dmac3)), '{:x}'.format(int(self.server_eth_values.dmac4)),
+                    '{:x}'.format(int(self.server_eth_values.dmac5)))
+        logger.info('NSP / NSI: %s/%s', self.server_base_values.service_path, self.server_base_values.service_index)
+        logger.info("NSH CTX VALUES : %s | %s | %s | %s ", self.server_ctx_values.network_platform,
+                     self.server_ctx_values.network_shared, self.server_ctx_values.service_platform,
+                     self.server_ctx_values.service_shared)
+
     def _decode_headers(self, data):
         """
         Procedure for decoding packet headers.
@@ -136,9 +152,13 @@ class BasicService(object):
         nsh_decode.decode_contextheader(data, self.server_ctx_values)
         # decode NSH eth headers
         nsh_decode.decode_ethheader(data, self.server_eth_values)
+
+        self._pretty_print_decoded()
+
         # decode common trace header
         if nsh_decode.is_trace_message(data):
             nsh_decode.decode_trace_req(data, self.server_trace_values)
+
 
     def _process_incoming_packet(self, data, addr):
         """
@@ -150,29 +170,19 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        logger.debug('%s: Processing received packet(basicservice) service name :%s',
+        logger.info('%s: Processing received packet(basicservice) service name :%s',
                      self.service_type, self.service_name)
 
         self._decode_headers(data)
 
-        logger.info('dmac0: %s',  self.server_eth_values.dmac0)
-        logger.info('dmac1: %s',  self.server_eth_values.dmac1)
-        logger.info('dmac2: %s',  self.server_eth_values.dmac2)
-        logger.info('dmac3: %s',  self.server_eth_values.dmac3)
-        logger.info('dmac4: %s',  self.server_eth_values.dmac4)
-        logger.info('dmac5: %s',  self.server_eth_values.dmac5)
-        logger.info('smac0: %s',  self.server_eth_values.smac0)
-        logger.info('smac1: %s',  self.server_eth_values.smac1)
-        logger.info('smac2: %s',  self.server_eth_values.smac2)
-        logger.info('smac3: %s',  self.server_eth_values.smac3)
-        logger.info('smac4: %s',  self.server_eth_values.smac4)
-        logger.info('smac5: %s',  self.server_eth_values.smac5)
         rw_data = bytearray(data)
-        logger.info('RW DATA: %s', rw_data)
+
         rw_data, _ = process_service_index(rw_data, self.server_base_values)
         sfc_globals.sf_processed_packets += 1
 
         return rw_data
+
+
 
     def _update_metadata(self, data,
                          network_platform=None, network_shared=None,
@@ -259,7 +269,7 @@ class BasicService(object):
         logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
         if nsh_decode.is_data_message(data):
-            logger.debug('%s: Sending packets to %s', self.service_type, addr)
+            logger.info('%s: Sending packets to %s', self.service_type, addr)
             if nsh_decode.is_vxlan_nsh_legacy_message(data):
                 # Disregard source port of received packet and send packet back to 6633
                 addr_l = list(addr)

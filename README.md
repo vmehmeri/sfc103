@@ -42,3 +42,5 @@ Cleanup Demo
 
 Trouble Shooting(TBD)
 --------------------
+1. vagrant ssh <vm-hostname>
+2. check nohup.out file for erros
