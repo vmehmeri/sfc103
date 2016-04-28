@@ -32,7 +32,7 @@ do
     sleep 30
 done
 
-vagrant ssh odl -c "/vagrant/setup.py"
+vagrant ssh odl -c "python /vagrant/setup.py"
 sleep 60
 vagrant ssh classifier1  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
 vagrant ssh classifier2  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"

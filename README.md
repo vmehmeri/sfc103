@@ -4,6 +4,8 @@ SFC103 Demo
 Overview
 --------
 
+** BEFORE CLONING ON WINDOWS, run "git config core.autocrlf false" **
+
 SFC103 demo employs a Service Chain with 2 Service Functions (DPI and Firewall) and standalone SFC classifier.
 
 This was modified from https://git.opendaylight.org/gerrit/p/sfc.git to fix some issues when running this demo on Windows environment.  
