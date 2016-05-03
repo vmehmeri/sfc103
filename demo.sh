@@ -34,9 +34,10 @@ do
 done
 
 #vagrant ssh odl -c "python /vagrant/setup.py"
-#sleep 60
-#vagrant ssh classifier1  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
-#vagrant ssh classifier2  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
-#vagrant ssh sff1 -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
-#vagrant ssh sff2 -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
-#vagrant ssh classifier1  -c "sudo ip netns exec app wget http://192.168.2.2"
+vagrant ssh spn -c "docker run spn python /cowsay/sfc103/setup.py"
+sleep 60
+vagrant ssh classifier1  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
+vagrant ssh classifier2  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
+vagrant ssh sff1 -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
+vagrant ssh sff2 -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
+vagrant ssh classifier1  -c "sudo ip netns exec app wget http://192.168.2.2"
