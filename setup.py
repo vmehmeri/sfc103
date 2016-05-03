@@ -304,6 +304,20 @@ def get_service_function_chains_data():
                         "type": "firewall"
                     }
                 ]
+            },
+			{
+                "name": "SFC1_2",
+                "symmetric": "true",
+                "sfc-service-function": [
+                    {
+                        "name": "dpi-abstract1_2",
+                        "type": "dpi"
+                    },
+                    {
+                        "name": "firewall-abstract1_2",
+                        "type": "firewall"
+                    }
+                ]
             }
         ]
     }
@@ -319,6 +333,13 @@ def get_service_function_paths_data():
             {
                 "name": "SFP1",
                 "service-chain-name": "SFC1",
+                "starting-index": 255,
+                "symmetric": "true",
+                 "context-metadata": "NSH1"
+            },
+			{
+                "name": "SFP1_2",
+                "service-chain-name": "SFC1_2",
                 "starting-index": 255,
                 "symmetric": "true",
                  "context-metadata": "NSH1"
@@ -359,6 +380,14 @@ def get_service_function_paths_data():
         "symmetric-classifier": "Classifier2",
         "context-metadata": "NSH1",
         "symmetric": "true"
+      },
+	  {
+        "name": "SFP1_2",
+        "service-chain-name": "SFC1_2",
+        "classifier": "Classifier1_2",
+        "symmetric-classifier": "Classifier2_2",
+        "context-metadata": "NSH1",
+        "symmetric": "true"
       }
     ]
   }
@@ -372,6 +401,15 @@ def get_rendered_service_path_data():
     "input": {
         "name": "RSP1",
         "parent-service-function-path": "SFP1",
+        "symmetric": "true"
+    }
+}
+
+def get_rendered_service_path_data_2():
+    return {
+    "input": {
+        "name": "RSP1_2",
+        "parent-service-function-path": "SFP1_2",
         "symmetric": "true"
     }
 }
@@ -407,6 +445,30 @@ def get_service_function_acl_data():
           ]
         }
       },
+	  {
+        "acl-name": "ACL1_2",
+        "access-list-entries": {
+          "ace": [
+            {
+              "rule-name": "ACE1_2",
+              "actions": {
+                "service-function-acl:rendered-service-path": "RSP1_2"
+              },
+              "matches": {
+                "destination-ipv4-network": "192.168.3.0/24",
+                "source-ipv4-network": "192.168.3.0/24",
+                "protocol": "6",
+                "source-port-range": {
+                    "lower-port": 0
+                },
+                "destination-port-range": {
+                    "lower-port": 80
+                }
+              }
+            }
+          ]
+        }
+      },
       {
         "acl-name": "ACL2",
         "access-list-entries": {
@@ -419,6 +481,30 @@ def get_service_function_acl_data():
               "matches": {
                 "destination-ipv4-network": "192.168.2.0/24",
                 "source-ipv4-network": "192.168.2.0/24",
+                "protocol": "6",
+                "source-port-range": {
+                    "lower-port": 80
+                },
+                "destination-port-range": {
+                    "lower-port": 0
+                }
+              }
+            }
+          ]
+        }
+      },
+	  {
+        "acl-name": "ACL2_2",
+        "access-list-entries": {
+          "ace": [
+            {
+              "rule-name": "ACE2_2",
+              "actions": {
+                "service-function-acl:rendered-service-path": "RSP1_2-Reverse"
+              },
+              "matches": {
+                "destination-ipv4-network": "192.168.3.0/24",
+                "source-ipv4-network": "192.168.3.0/24",
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 80
@@ -452,6 +538,16 @@ def get_service_function_classifiers_data():
         ],
         "access-list": "ACL1"
       },
+	  {
+        "name": "Classifier1_2",
+        "scl-service-function-forwarder": [
+          {
+            "name": "SFF0_2",
+            "interface": "veth2-br"
+          }
+        ],
+        "access-list": "ACL1_2"
+      },
       {
         "name": "Classifier2",
         "scl-service-function-forwarder": [
@@ -461,7 +557,17 @@ def get_service_function_classifiers_data():
           }
         ],
         "access-list": "ACL2"
-      }
+      },
+	  {
+        "name": "Classifier2_2",
+        "scl-service-function-forwarder": [
+          {
+            "name": "SFF3_2",
+            "interface": "veth2-br"
+          }
+        ],
+        "access-list": "ACL2_2"
+      },
     ]
   }
 }
@@ -484,5 +590,6 @@ if __name__ == "__main__":
     put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), True)
     print "sending rendered service path"
     post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), True)
+    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data_2(), True)
     print "sending service function classifiers"
     put(controller, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), True)
