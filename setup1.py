@@ -52,7 +52,6 @@ def post(host, port, uri, data, debug=False):
     time.sleep(5)
 
 
-
 def get_service_function_chains_uri():
     return "/restconf/config/service-function-chain:service-function-chains/"
 
@@ -61,22 +60,8 @@ def get_service_function_chains_data():
     "service-function-chains": {
         "service-function-chain": [
             {
-                "name": "SFC1_2",
-                "symmetric": "false",
-                "sfc-service-function": [
-                    {
-                        "name": "dpi-abstract1",
-                        "type": "dpi"
-                    },
-                    {
-                        "name": "firewall-abstract1",
-                        "type": "firewall"
-                    }
-                ]
-            },
-			{
-                "name": "SFC1_2-Reverse",
-                "symmetric": "false",
+                "name": "SFC1",
+                "symmetric": "true",
                 "sfc-service-function": [
                     {
                         "name": "dpi-abstract1",
@@ -100,17 +85,10 @@ def get_service_function_paths_data():
     "service-function-paths": {
         "service-function-path": [
             {
-                "name": "SFP1_2",
-                "service-chain-name": "SFC1_2",
+                "name": "SFP1",
+                "service-chain-name": "SFC1",
                 "starting-index": 255,
-                "symmetric": "false",
-                 "context-metadata": "NSH1"
-            },
-			{
-                "name": "SFP1_2-Reverse",
-                "service-chain-name": "SFC1_2-Reverse",
-                "starting-index": 255,
-                "symmetric": "false",
+                "symmetric": "true",
                  "context-metadata": "NSH1"
             }
         ]
@@ -143,18 +121,12 @@ def get_service_function_paths_data():
   "service-function-paths": {
     "service-function-path": [
       {
-        "name": "SFP1_2",
-        "service-chain-name": "SFC1_2",
-        "classifier": "Classifier1_2",
+        "name": "SFP1",
+        "service-chain-name": "SFC1",
+        "classifier": "Classifier1",
+        "symmetric-classifier": "Classifier2",
         "context-metadata": "NSH1",
-        "symmetric": "false"
-      },
-	  {
-        "name": "SFP1_2-Reverse",
-        "service-chain-name": "SFC1_2-Reverse",
-        "classifier": "Classifier2_2",
-        "context-metadata": "NSH1",
-        "symmetric": "false"
+        "symmetric": "true"
       }
     ]
   }
@@ -166,20 +138,12 @@ def get_rendered_service_path_uri():
 def get_rendered_service_path_data():
     return {
     "input": {
-        "name": "RSP1_2",
-        "parent-service-function-path": "SFP1_2",
-        "symmetric": "false"
+        "name": "RSP1",
+        "parent-service-function-path": "SFP1",
+        "symmetric": "true"
     }
 }
 
-def get_reverse_rendered_service_path_data():
-    return {
-    "input": {
-        "name": "RSP1_2-Reverse",
-        "parent-service-function-path": "SFP1_2-Reverse",
-        "symmetric": "false"
-    }
-}
 
 def get_service_function_acl_uri():
     return "/restconf/config/ietf-access-control-list:access-lists/"
@@ -189,17 +153,17 @@ def get_service_function_acl_data():
   "access-lists": {
     "acl": [
       {
-        "acl-name": "ACL1_2",
+        "acl-name": "ACL1",
         "access-list-entries": {
           "ace": [
             {
-              "rule-name": "ACE1_2",
+              "rule-name": "ACE1",
               "actions": {
-                "service-function-acl:rendered-service-path": "RSP1_2"
+                "service-function-acl:rendered-service-path": "RSP1"
               },
               "matches": {
-                "destination-ipv4-network": "192.168.3.0/24",
-                "source-ipv4-network": "192.168.3.0/24",
+                "destination-ipv4-network": "192.168.2.0/24",
+                "source-ipv4-network": "192.168.2.0/24",
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 0
@@ -212,18 +176,19 @@ def get_service_function_acl_data():
           ]
         }
       },
+        
       {
-        "acl-name": "ACL2_2",
+        "acl-name": "ACL2",
         "access-list-entries": {
           "ace": [
             {
-              "rule-name": "ACE2_2",
+              "rule-name": "ACE2",
               "actions": {
-                "service-function-acl:rendered-service-path": "RSP1_2-Reverse"
+                "service-function-acl:rendered-service-path": "RSP1-Reverse"
               },
               "matches": {
-                "destination-ipv4-network": "192.168.3.0/24",
-                "source-ipv4-network": "192.168.3.0/24",
+                "destination-ipv4-network": "192.168.2.0/24",
+                "source-ipv4-network": "192.168.2.0/24",
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 80
@@ -248,25 +213,25 @@ def get_service_function_classifiers_data():
   "service-function-classifiers": {
     "service-function-classifier": [
       {
-        "name": "Classifier1_2",
+        "name": "Classifier1",
         "scl-service-function-forwarder": [
           {
             "name": "SFF0",
-            "interface": "veth2-br"
+            "interface": "veth-br"
           }
         ],
-        "access-list": "ACL1_2"
+        "access-list": "ACL1"
       },
       {
-        "name": "Classifier2_2",
+        "name": "Classifier2",
         "scl-service-function-forwarder": [
           {
             "name": "SFF3",
-            "interface": "veth2-br"
+            "interface": "veth-br"
           }
         ],
-        "access-list": "ACL2_2"
-      },
+        "access-list": "ACL2"
+      }
     ]
   }
 }
@@ -283,6 +248,5 @@ if __name__ == "__main__":
     put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), True)
     print "sending rendered service path"
     post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), True)
-    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_reverse_rendered_service_path_data(), True)
     print "sending service function classifiers"
     put(controller, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), True)
