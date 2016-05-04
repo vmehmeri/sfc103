@@ -2,7 +2,7 @@
 #vagrant destroy -f
 vagrant up
 vagrant ssh odl -c "nohup /vagrant/setup_odl.sh & sleep 1"
-vagrant ssh spn -c "nohup /vagrant/setup_spn.sh & sleep 1"
+vagrant ssh spn -c "nohup sudo /vagrant/setup_spn.sh & sleep 1"
 vagrant ssh classifier1  -c "nohup sudo /vagrant/setup_classifier.sh & sleep 1"
 vagrant ssh classifier2  -c "nohup sudo /vagrant/setup_classifier.sh & sleep 1"
 vagrant ssh sf1 -c "nohup sudo /vagrant/setup_sf.sh & sleep 1"
@@ -34,7 +34,7 @@ do
 done
 
 #vagrant ssh odl -c "python /vagrant/setup.py"
-vagrant ssh spn -c "docker run spn python /cowsay/sfc103/setup.py"
+vagrant ssh spn -c "sudo docker run spn python /cowsay/sfc103/setup.py"
 sleep 60
 vagrant ssh classifier1  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
 vagrant ssh classifier2  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"

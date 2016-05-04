@@ -54,9 +54,9 @@ else
     ip netns exec app ifconfig veth-app mtu 1400
     ip netns exec app python -m SimpleHTTPServer 80
 	
-	ip netns exec app2 ifconfig veth-app2 192.168.3.2/24 up
+    ip netns exec app2 ifconfig veth-app2 192.168.3.2/24 up
     ip netns exec app2 ip link set dev veth-app2 addr 00:00:44:44:44:44
-    ip netns exec app2 arp -s 192.168.2.1 00:00:33:33:33:33 -i veth-app2
+    ip netns exec app2 arp -s 192.168.3.1 00:00:33:33:33:33 -i veth-app2
     ip netns exec app2 ip link set dev veth-app2 up
     ip netns exec app2 ip link set dev lo up
     ip netns exec app2 ifconfig veth-app2 mtu 1400

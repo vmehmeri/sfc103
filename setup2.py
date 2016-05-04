@@ -292,24 +292,13 @@ def get_service_function_chains_data():
     "service-function-chains": {
         "service-function-chain": [
             {
-                "name": "SFC1",
+                "name": "SFC1_2",
                 "symmetric": "true",
                 "sfc-service-function": [
                     {
                         "name": "dpi-abstract1",
                         "type": "dpi"
                     },
-                    {
-                        "name": "firewall-abstract1",
-                        "type": "firewall"
-                    }
-                ]
-            }
-			
-			{
-                "name": "SFC2",
-                "symmetric": "true",
-                "sfc-service-function": [
                     {
                         "name": "firewall-abstract1",
                         "type": "firewall"
@@ -328,21 +317,14 @@ def get_service_function_paths_data():
     "service-function-paths": {
         "service-function-path": [
             {
-                "name": "SFP1",
-                "service-chain-name": "SFC1",
+                "name": "SFP1_2",
+                "service-chain-name": "SFC1_2",
                 "starting-index": 255,
                 "symmetric": "true",
                  "context-metadata": "NSH1"
             }
-			{
-                "name": "SFP2",
-                "service-chain-name": "SFC2",
-                "starting-index": 255,
-                "symmetric": "true",
-                 "context-metadata": "NSH1"
-            }
-        ] 
-    } 
+        ]
+    }
 }
 
 def get_service_function_metadata_uri():
@@ -371,18 +353,10 @@ def get_service_function_paths_data():
   "service-function-paths": {
     "service-function-path": [
       {
-        "name": "SFP1",
-        "service-chain-name": "SFC1",
-        "classifier": "Classifier1",
-        "symmetric-classifier": "Classifier2",
-        "context-metadata": "NSH1",
-        "symmetric": "true"
-      }
-	  {
-        "name": "SFP2",
-        "service-chain-name": "SFC2",
-        "classifier": "Classifier1",
-        "symmetric-classifier": "Classifier2",
+        "name": "SFP1_2",
+        "service-chain-name": "SFC1_2",
+        "classifier": "Classifier1_2",
+        "symmetric-classifier": "Classifier2_2",
         "context-metadata": "NSH1",
         "symmetric": "true"
       }
@@ -393,11 +367,11 @@ def get_service_function_paths_data():
 def get_rendered_service_path_uri():
     return "/restconf/operations/rendered-service-path:create-rendered-path/"
 
-def get_rendered_service_path_data(rsp):
+def get_rendered_service_path_data():
     return {
     "input": {
-        "name": rsp,
-        "parent-service-function-path": "SFP1",
+        "name": "RSP1_2",
+        "parent-service-function-path": "SFP1_2",
         "symmetric": "true"
     }
 }
@@ -405,22 +379,22 @@ def get_rendered_service_path_data(rsp):
 def get_service_function_acl_uri():
     return "/restconf/config/ietf-access-control-list:access-lists/"
 
-def get_service_function_acl_data(rsp):
+def get_service_function_acl_data():
     return  {
   "access-lists": {
     "acl": [
       {
-        "acl-name": "ACL1",
+        "acl-name": "ACL1_2",
         "access-list-entries": {
           "ace": [
             {
-              "rule-name": "ACE1",
+              "rule-name": "ACE1_2",
               "actions": {
-                "service-function-acl:rendered-service-path": rsp
+                "service-function-acl:rendered-service-path": "RSP1_2"
               },
               "matches": {
-                "destination-ipv4-network": "192.168.2.0/24",
-                "source-ipv4-network": "192.168.2.0/24",
+                "destination-ipv4-network": "192.168.3.0/24",
+                "source-ipv4-network": "192.168.3.0/24",
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 0
@@ -434,17 +408,17 @@ def get_service_function_acl_data(rsp):
         }
       },
       {
-        "acl-name": "ACL2",
+        "acl-name": "ACL2_2",
         "access-list-entries": {
           "ace": [
             {
-              "rule-name": "ACE2",
+              "rule-name": "ACE2_2",
               "actions": {
-                "service-function-acl:rendered-service-path": "%s-Reverse" % rsp
+                "service-function-acl:rendered-service-path": "RSP1_2-Reverse"
               },
               "matches": {
-                "destination-ipv4-network": "192.168.2.0/24",
-                "source-ipv4-network": "192.168.2.0/24",
+                "destination-ipv4-network": "192.168.3.0/24",
+                "source-ipv4-network": "192.168.3.0/24",
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 80
@@ -469,25 +443,25 @@ def get_service_function_classifiers_data():
   "service-function-classifiers": {
     "service-function-classifier": [
       {
-        "name": "Classifier1",
+        "name": "Classifier1_2",
         "scl-service-function-forwarder": [
           {
             "name": "SFF0",
-            "interface": "veth-br"
+            "interface": "veth2-br"
           }
         ],
-        "access-list": "ACL1"
+        "access-list": "ACL1_2"
       },
       {
-        "name": "Classifier2",
+        "name": "Classifier2_2",
         "scl-service-function-forwarder": [
           {
             "name": "SFF3",
-            "interface": "veth-br"
+            "interface": "veth2-br"
           }
         ],
-        "access-list": "ACL2"
-      }
+        "access-list": "ACL2_2"
+      },
     ]
   }
 }
@@ -507,8 +481,8 @@ if __name__ == "__main__":
     print "sending service function paths"
     put(controller, DEFAULT_PORT, get_service_function_paths_uri(), get_service_function_paths_data(), True)
     print "sending service function acl"
-    put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data("RSP2"), True)
+    put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), True)
     print "sending rendered service path"
-    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data("RSP2"), True)
+    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), True)
     print "sending service function classifiers"
     put(controller, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), True)
