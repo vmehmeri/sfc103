@@ -8,6 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "trusty-server-cloudimg-amd64-vagrant-disk1.box"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  config.ssh.forward_x11 = true
   config.vm.provider :virtualbox do |v|
     v.customize ["modifyvm", :id, "--memory", 1024]
     v.customize ["modifyvm", :id, "--cpus", 4]
@@ -36,6 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "classifier1" do | h |
     h.vm.host_name = "classifier1"
     h.vm.network :private_network, ip: "192.168.1.10"
+	h.vm.network :public_network, :public_network => "eth0"
   end
 
   config.vm.define "sff1" do | h |
