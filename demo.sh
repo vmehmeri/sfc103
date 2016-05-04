@@ -34,9 +34,9 @@ do
 done
 
 #vagrant ssh odl -c "python /vagrant/setup.py"
-vagrant ssh spn -c "sudo docker run spn python /sfc103/setup.py"
-vagrant ssh spn -c "sudo docker run spn python /sfc103/setup1.py"
-vagrant ssh spn -c "sudo docker run spn python /sfc103/setup2.py"
+vagrant ssh spn -c "sudo docker run spn python /scripts/setup.py"
+vagrant ssh spn -c "sudo docker run spn python /scripts/setup1.py"
+vagrant ssh spn -c "sudo docker run spn python /scripts/setup2.py"
 sleep 60
 vagrant ssh classifier1  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
 vagrant ssh classifier2  -c "sudo ovs-ofctl dump-flows -OOpenflow13 br-sfc"
