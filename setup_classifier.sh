@@ -11,7 +11,7 @@ apt-get install python3-pip -y
 pip3 install sfc
 apt-get install git curl -y
 apt-get install mini-httpd -y
-apt-get install nginx
+apt-get install nginx -y
 
 rmmod openvswitch
 find /lib/modules | grep openvswitch.ko | xargs rm -rf
@@ -47,14 +47,15 @@ if [ $host  == 'classifier1'  ] ; then
     ip netns exec app2 ip link set dev lo up
     ip netns exec app2 ifconfig veth-app2 mtu 1400
 else
-	cp /vagrant/tenant1/index.html ~
+    cp /vagrant/tenant1/index.html ~
+    cp /vagrant/tenant2/index.html /usr/share/nginx/html
     ip netns exec app ifconfig veth-app 192.168.2.2/24 up
     ip netns exec app ip link set dev veth-app  addr 00:00:22:22:22:22
     ip netns exec app arp -s 192.168.2.1 00:00:11:11:11:11 -i veth-app
     ip netns exec app ip link set dev veth-app up
     ip netns exec app ip link set dev lo up
     ip netns exec app ifconfig veth-app mtu 1400
-    ip netns exec app python -m SimpleHTTPServer 80
+    ip netns exec app python -m SimpleHTTPServer 80 &
 	
     ip netns exec app2 ifconfig veth-app2 192.168.3.2/24 up
     ip netns exec app2 ip link set dev veth-app2 addr 00:00:44:44:44:44
@@ -62,6 +63,6 @@ else
     ip netns exec app2 ip link set dev veth-app2 up
     ip netns exec app2 ip link set dev lo up
     ip netns exec app2 ifconfig veth-app2 mtu 1400
-    ip netns exec app2 nginx -p /vagrant/tenant2/
+    ip netns exec app2 nginx &
 fi
 ovs-vsctl show
